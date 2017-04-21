@@ -1,0 +1,15 @@
+p#notice = notice
+
+p
+  strong Title:
+  = @ticket.title
+p
+  strong Body:
+  = @ticket.body
+p
+  strong Email:
+  = @ticket.email
+
+= link_to 'Edit', edit_ticket_path(@ticket)
+'|
+= link_to 'Back', tickets_path
