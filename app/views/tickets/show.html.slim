@@ -1,15 +1,28 @@
-p#notice = notice
-
 p
-  strong Title:
-  = @ticket.title
-p
-  strong Body:
-  = @ticket.body
-p
-  strong Email:
-  = @ticket.email
-
-= link_to 'Edit', edit_ticket_path(@ticket)
-'|
-= link_to 'Back', tickets_path
+    #notice = notice
+div class = "panel panel-default"
+    div class = "panel-heading"
+        p
+          strong Title:
+          = @ticket.title
+          br
+          = "Status: "
+          = @ticket.status
+          br
+          = "Current moderator: "
+          =User.find(@ticket.moderator_id).email unless @ticket.moderator_id == nil
+    div class = "panel-body"
+        p
+          strong Body:
+          = raw @ticket.body
+        p
+          strong Email:
+          = @ticket.email
+        div class="btn-group" role="group" aria-label="..."
+            = link_to 'Edit', edit_ticket_path(@ticket.link_id),class: "btn btn-default"
+            = link_to 'Back', tickets_path,class: "btn btn-default"
+            = link_to 'Close!', complete_ticket_path, data: { method: :put },class: "btn btn-default"
+    div class = "panel-footer"
+        = render partial: "/comments/comments", locals: {commentable: @ticket}
+        -unless @ticket.complete
+            = render partial: "/comments/form", locals: {commentable: @ticket}

@@ -1,25 +1,59 @@
-h1 Listing tickets
+p
+    #notice = notice
+div class="row"
+    div class="col-sm-8 blog-main"
+        div class="panel panel-default"
+            div class="panel-heading"
+                h2 Listing tickets        
+            table class="table table-bordered table-striped table-condensed"
+                thead
+                  tr
+                    th Title
+                    th Email
+                    th Status
+                    th Current Moderator
+                    th Secret key
+                    th Action
+                tbody
+                - @tickets.each do |ticket|
+                    tr
+                        td = ticket.title
+                        td = ticket.email
+                        td = ticket.status
+                        td = User.find(ticket.moderator_id).email unless ticket.moderator_id == nil
+                        td = ticket.link_id
+                        td
 
-table
-  thead
-    tr
-      th Title
-      th Body
-      th Email
-      th
-      th
-      th
+                            div class="btn-group" role="group" aria-label="..."
+                                = link_to 'Show', ticket_path(ticket.link_id), class: "btn btn-default"
+        div class="panel panel-default"
+            div class="panel-heading"
+                h2 Completed tickets
+            table class="table table-bordered table-striped table-condensed"
+                thead
+                  tr
+                    th Title
+                    th Email
+                    th Status
+                    th Secret key
+                    th Action
+                tbody
+                - @completed_tickets.each do |ticket|
+                    tr
+                        td = ticket.title
+                        td = ticket.email
+                        td = ticket.status
+                        td = ticket.link_id
+                        td
 
-  tbody
-    - @tickets.each do |ticket|
-      tr
-        td = ticket.title
-        td = ticket.body
-        td = ticket.email
-        td = link_to 'Show', ticket
-        td = link_to 'Edit', edit_ticket_path(ticket)
-        td = link_to 'Destroy', ticket, data: { confirm: 'Are you sure?' }, method: :delete
+                            div class="btn-group" role="group" aria-label="..."
+                                = link_to 'Show', ticket_path(ticket.link_id), class: "btn btn-default"
+        = link_to 'New Ticket', new_ticket_path, class: "btn btn-default"
 
-br
-
-= link_to 'New Ticket', new_ticket_path
+    div class="col-sm-3 col-sm-offset-1 blog-sidebar"
+        div class="sidebar-module"
+            h4 Tickets In Progress:
+            ol class=""
+                - @tickets_inprogress.each do |ticket|
+                    li 
+                        =link_to ticket.title, ticket_path(ticket.link_id)
