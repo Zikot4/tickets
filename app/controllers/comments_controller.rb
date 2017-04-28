@@ -10,15 +10,11 @@ class CommentsController < ApplicationController
     end
 
     def new
-        @comment = @ticket.comments.new comment_params
-
-        @comment.user_id = current_user.id if current_user.moderator or current_user.admin if user_signed_in?
-        @comment.save
+        @comment = Comment.create_comment(@ticket,@comment,current_user,comment_params)
         redirect_to ticket_path(@ticket.link_id), notice: "Your comment was successful posted."
     end
 
     def create
-
     end
 
     def update

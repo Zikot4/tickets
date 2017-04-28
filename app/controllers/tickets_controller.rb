@@ -1,28 +1,21 @@
 class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy,:generate_link_id, :complete]
   before_action :ticket_is_closed?, only: [:edit,:update]
+  before_action :user_log_in?, only: [:user_moderator?, :user_admin?]
   before_action :user_moderator?, only: [:index, :update, :edit, :complete]
   before_action :user_admin?, only: [:destroy]
-
   # GET /tickets
-  # GET /tickets.json
   def index
-      @tickets = Ticket.where(complete: false).order('status')
-      @completed_tickets = Ticket.where(complete: true).order('updated_at')
-      @tickets_inprogress = Ticket.where(moderator_id: current_user.id,status: Ticket::STATUSES['Inprogress'])
+      @uncompleted_tickets = Ticket.uncompleted.all
+      @completed_tickets = Ticket.completed.all
+      @tickets_inprogress = Ticket.inprogress(current_user).all
   end
 
   # GET /tickets/1
-  # GET /tickets/1.json
   def show
-    @ticket = Ticket.find_by(link_id: params[:link_id])
     if user_signed_in?
         if current_user.moderator
-            if @ticket.status == Ticket::STATUSES['Waiting']
-                @ticket.status = Ticket::STATUSES['Inprogress']
-                @ticket.moderator_id = current_user.id
-                @ticket.save
-            end
+            Ticket.change_status(@ticket, current_user)
         end
     end
   end
@@ -37,54 +30,33 @@ class TicketsController < ApplicationController
   end
 
   # POST /tickets
-  # POST /tickets.json
   def create
-    @ticket = Ticket.new(ticket_params)
-    generate_link_id
-    respond_to do |format|
-      if @ticket.save
-        #SecreturlMailer.secreturl_send(@ticket).deliver
-        format.html { redirect_to root_path, notice: 'Ticket was successfully created. Thanks for the feedback!'+
-                                                    ' We send your secret link on your email:'+@ticket.email }
-        format.json { render :show, status: :created, location: root_path }
-      else
-        format.html { render :new }
-        format.json { render json: @ticket.errors, status: :unprocessable_entity }
-      end
-    end
+    @ticket = Ticket.create_ticket(@ticket,ticket_params)
+    redirect_to root_path, notice: 'Ticket was successfully created. Thanks for the feedback!'+
+                                    ' We send your secret link on your email:'+@ticket.email
   end
 
   # PATCH/PUT /tickets/1
   # PATCH/PUT /tickets/1.json
   def update
-    respond_to do |format|
-      if @ticket.update(ticket_params)
-        format.html { redirect_to ticket_path, notice: 'Ticket was successfully updated.' }
-        format.json { render :show, status: :ok, location: @ticket }
-      else
-        format.html { render :edit }
-        format.json { render json: @ticket.errors, status: :unprocessable_entity }
-      end
-    end
+    @ticket.update(ticket_params)
+    redirect_to ticket_path, notice: 'Ticket was successfully updated.'
   end
 
   # DELETE /tickets/1
   # DELETE /tickets/1.json
   def destroy
     @ticket.destroy
-    respond_to do |format|
-      format.html { redirect_to tickets_url, notice: 'Ticket was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    redirect_to tickets_url, notice: 'Ticket was successfully destroyed.'
   end
 
   def complete
-    @ticket.complete = true
-    @ticket.status = Ticket::STATUSES['Closed']
-    @ticket.save
-    redirect_to tickets_url, notice: "Ticket was successfully closed"
+      Ticket.complete(@ticket)
+      redirect_to tickets_url, notice: "Ticket was successfully closed"
   end
+
 private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_ticket
       @ticket = Ticket.find_by(link_id: params[:link_id])
@@ -95,44 +67,19 @@ private
       params.require(:ticket).permit(:title, :body, :email)
     end
 
-    def generate_link_id
-        @ticket.link_id = create_url
-        @ticket.link_id = create_url while Ticket.find_by(link_id: @ticket.link_id)
-    end
-
-    def create_url
-        alphabet = ('a'..'z').to_a
-        alphabet += ('A'..'Z').to_a
-        r = Random.new
-        url = "ticket"
-        2.times do
-            url += "-"+3.times.map {alphabet.sample}.join
-            url += "-"+r.rand(100..999).to_s
-        end
-        url
-    end
-
     def ticket_is_closed?
         redirect_to root_path if @ticket.complete
     end
 
+    def user_log_in?
+        redirect_to root_path unless user_signed_in?
+    end
+
     def user_moderator?
-        catch (:done)  do
-            unless user_signed_in?
-                redirect_to root_path
-                throw :done
-            end
         redirect_to root_path unless current_user.moderator
-        end
     end
 
     def user_admin?
-        catch (:done)  do
-            unless user_signed_in?
-                redirect_to root_path
-                throw :done
-            end
         redirect_to root_path unless current_user.admin
-        end
     end
 end

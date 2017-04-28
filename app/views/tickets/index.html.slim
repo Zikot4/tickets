@@ -15,7 +15,7 @@ div class="row"
                     th Secret key
                     th Action
                 tbody
-                - @tickets.each do |ticket|
+                - @uncompleted_tickets.each do |ticket|
                     tr
                         td = ticket.title
                         td = ticket.email

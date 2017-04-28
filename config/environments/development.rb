@@ -31,7 +31,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   ActionMailer::Base.smtp_settings ={
           :address                  =>   "smtp.gmail.com",
-          :port                     =>   25,
+          :port                     =>   587,
           :domain                   =>   "mail.google.com",
           :authentication           =>   "login",
           :enable_starttls_auto     =>   true,
