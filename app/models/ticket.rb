@@ -1,8 +1,10 @@
+require_relative 'module/generate_url'
+
 class Ticket < ApplicationRecord
     STATUSES = {
-        'Waiting' => "Waiting For Reply",
-        'Inprogress' => "In Progress",
-        'Closed'=> "Closed"
+        :waiting => "Waiting For Reply",
+        :inprogress => "In Progress",
+        :closed => "Closed"
     }
     has_many :comments, as: :commentable, dependent: :destroy
 
@@ -11,8 +13,8 @@ class Ticket < ApplicationRecord
     scope :inprogress, lambda {|user| where(moderator_id: user.id,status: STATUSES['Inprogress'])}
 
     def self.change_status(ticket, user)
-        if ticket.status == STATUSES['Waiting']
-            ticket.status = STATUSES['Inprogress']
+        if ticket.status == STATUSES[:waiting]
+            ticket.status = STATUSES[:inprogress]
             ticket.moderator_id = user.id
             ticket.save
         end
@@ -20,7 +22,7 @@ class Ticket < ApplicationRecord
 
     def self.complete(ticket)
         ticket.complete = true
-        ticket.status = Ticket::STATUSES['Closed']
+        ticket.status = Ticket::STATUSES[:closed]
         ticket.save
     end
 

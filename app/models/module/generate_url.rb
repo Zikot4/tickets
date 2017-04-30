@@ -8,6 +8,7 @@ module GenerateUrl
     end
 
     def self.create_url
+
         r = Random.new
         url = ""
         N.times do |i|
