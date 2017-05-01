@@ -1,4 +1,4 @@
-require_relative 'module/generate_url'
+require './app/service/tickets_service.rb'
 
 class Ticket < ApplicationRecord
     STATUSES = {
@@ -8,32 +8,21 @@ class Ticket < ApplicationRecord
     }
     has_many :comments, as: :commentable, dependent: :destroy
 
+    @ticket_service = TicketService.new
+
     scope :uncompleted, lambda { where(complete: false).order('status DESC')}
     scope :completed, lambda {where(complete: true).order('updated_at DESC')}
     scope :inprogress, lambda {|user| where(moderator_id: user.id,status: STATUSES['Inprogress'])}
 
     def self.change_status(ticket, user)
-        if ticket.status == STATUSES[:waiting]
-            ticket.status = STATUSES[:inprogress]
-            ticket.moderator_id = user.id
-            ticket.save
-        end
+        @ticket_service.change_status(ticket,user)
     end
 
     def self.complete(ticket)
-        ticket.complete = true
-        ticket.status = Ticket::STATUSES[:closed]
-        ticket.save
+        @ticket_service.complete(ticket)
     end
 
     def self.create_ticket(ticket,ticket_params)
-        ticket = self.new(ticket_params)
-        GenerateUrl.generate_link_id(ticket)
-        ticket.save
-        #SecreturlMailer.secreturl_send(ticket).deliver
-        return ticket
+        @ticket_service.create_ticket(ticket,ticket_params)
     end
-
-
-
 end
