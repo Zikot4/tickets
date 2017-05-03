@@ -19,8 +19,9 @@
 				br
 				= raw comment.body
 				-unless @ticket.complete
-					-if user_signed_in?
-						-if current_user.id == comment.user_id
-							br
+					br
+					div class="btn-group" role="group" aria-label="..."
+						-if can? :update, comment
 							=link_to "Edit", edit_ticket_comment_path(@ticket.link_id,comment), class: "btn btn-default"
-							=link_to "Destroy", ticket_comment_path(@ticket.link_id,comment), data: {:confirm => "Are you sure?"}, :method=>:delete, class: "btn btn-default"
+						-if can? :destroy, comment
+							=link_to "Destroy", ticket_comment_path(@ticket.link_id,comment), data: {:confirm => "Are you sure?"}, :method=>:delete, class: "btn btn-warning"

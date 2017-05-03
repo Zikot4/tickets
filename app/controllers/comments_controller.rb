@@ -1,6 +1,5 @@
 class CommentsController < ApplicationController
     before_action :find_ticket
-    before_action :ticket_is_closed?
     before_action :find_comment, only: [:destroy, :edit, :show, :update]
     before_action :init_service, only: [:new]
 
@@ -8,6 +7,7 @@ class CommentsController < ApplicationController
     end
 
     def show
+        authorize! :show, @comment
     end
 
     def new
@@ -16,6 +16,10 @@ class CommentsController < ApplicationController
     end
 
     def create
+    end
+
+    def edit
+        authorize! :update, @comment
     end
 
     def update
@@ -27,6 +31,7 @@ class CommentsController < ApplicationController
 	end
 
     def destroy
+        authorize! :destroy, @comment
         @comment.destroy
         redirect_to ticket_path(@ticket.link_id), notice: "Comment was successfully destroyed."
     end
@@ -49,9 +54,5 @@ private
         @ticket = Ticket.find_by(link_id: params[:ticket_link_id])
     end
 
-
-    def ticket_is_closed?
-        redirect_to root_path if @ticket.complete
-    end
 
 end

@@ -19,9 +19,13 @@ div class = "panel panel-default"
           strong Email:
           = @ticket.email
         div class="btn-group" role="group" aria-label="..."
-            = link_to 'Edit', edit_ticket_path(@ticket.link_id),class: "btn btn-default"
+            -if can? :update, @ticket
+                = link_to 'Edit', edit_ticket_path(@ticket.link_id),class: "btn btn-default"
             = link_to 'Back', tickets_path,class: "btn btn-default"
-            = link_to 'Close!', complete_ticket_path, data: { method: :put },class: "btn btn-default"
+            -if can? :complete, @ticket
+                = link_to 'Close!', complete_ticket_path, data: { method: :put },class: "btn btn-primary"
+            -if can? :destroy, @ticket
+                = link_to 'Delete', ticket_path(@ticket.link_id), data: {:confirm => "Are you sure?"}, :method=>:delete, class: "btn btn-warning"
     div class = "panel-footer"
         = render partial: "/comments/comments", locals: {commentable: @ticket}
         -unless @ticket.complete

@@ -26,6 +26,8 @@ div class="row"
 
                             div class="btn-group" role="group" aria-label="..."
                                 = link_to 'Show', ticket_path(ticket.link_id), class: "btn btn-default"
+                                -if can? :destroy, ticket
+                                    = link_to 'Delete', ticket_path(ticket.link_id), data: {:confirm => "Are you sure?"}, :method=>:delete, class: "btn btn-warning"
         div class="panel panel-default"
             div class="panel-heading"
                 h2 Completed tickets
@@ -48,6 +50,9 @@ div class="row"
 
                             div class="btn-group" role="group" aria-label="..."
                                 = link_to 'Show', ticket_path(ticket.link_id), class: "btn btn-default"
+                                -if can? :destroy, ticket
+                                    = link_to 'Delete', ticket_path(ticket.link_id), data: {:confirm => "Are you sure?"}, :method=>:delete, class: "btn btn-warning"
+                                
         = link_to 'New Ticket', new_ticket_path, class: "btn btn-default"
 
     div class="col-sm-3 col-sm-offset-1 blog-sidebar"
