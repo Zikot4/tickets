@@ -1,7 +1,6 @@
-require_relative "module/generate_url.rb"
 class TicketsService
     include TicketsCase
-    
+
     def initialize(ticket, user, params)
         @ticket = ticket
         @user = user

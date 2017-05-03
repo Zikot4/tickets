@@ -2,15 +2,6 @@ module TicketsCase
     extend ActiveSupport::Concern
     include ActiveModel::Validations
 
-    module ClassMethods
-        def complete(*args)
-            new(*args).tap { |use_case| use_case.perform }
-        end
-        def create(*args)
-            new(*args).tap { |use_case| use_case.perform }
-        end
-    end
-
     def complete
         raise NotImplementedError
     end
