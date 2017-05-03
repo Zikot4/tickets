@@ -1,9 +1,10 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy,:generate_link_id, :complete]
+  before_action :set_ticket, only: [ :show, :edit, :update, :destroy, :complete]
   before_action :ticket_is_closed?, only: [:edit,:update]
   before_action :user_log_in?, only: [:user_moderator?, :user_admin?]
   before_action :user_moderator?, only: [:index, :update, :edit, :complete]
   before_action :user_admin?, only: [:destroy]
+  before_action :init_service_for_create, only: [:create]
   # GET /tickets
   def index
       @uncompleted_tickets = Ticket.uncompleted.all
@@ -15,7 +16,7 @@ class TicketsController < ApplicationController
   def show
     if user_signed_in?
         if current_user.moderator
-            Ticket.change_status(@ticket, current_user)
+            @service.change_status
         end
     end
   end
@@ -31,9 +32,9 @@ class TicketsController < ApplicationController
 
   # POST /tickets
   def create
-    @ticket = Ticket.create_ticket(@ticket,ticket_params)
+    @ticket = @service_create.create
     redirect_to root_path, notice: 'Ticket was successfully created. Thanks for the feedback!'+
-                                    ' We send your secret link on your email:'+@ticket.email
+                                    ' We send your secret link on your email:'+@ticket.email.to_s
   end
 
   # PATCH/PUT /tickets/1
@@ -51,7 +52,7 @@ class TicketsController < ApplicationController
   end
 
   def complete
-      Ticket.complete(@ticket)
+      @service.complete
       redirect_to tickets_url, notice: "Ticket was successfully closed"
   end
 
@@ -60,6 +61,11 @@ private
     # Use callbacks to share common setup or constraints between actions.
     def set_ticket
       @ticket = Ticket.find_by(link_id: params[:link_id])
+      @service = TicketsService.new(@ticket, current_user,nil)
+    end
+
+    def init_service_for_create
+        @service_create = TicketsService.new(nil,nil,ticket_params)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -82,4 +88,5 @@ private
     def user_admin?
         redirect_to root_path unless current_user.admin
     end
+
 end

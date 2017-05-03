@@ -1,7 +1,8 @@
 class CommentsController < ApplicationController
     before_action :find_ticket
     before_action :ticket_is_closed?
-    before_action :find_comment, only: [:destroy,:edit,:show,:update]
+    before_action :find_comment, only: [:destroy, :edit, :show, :update]
+    before_action :init_service, only: [:new]
 
     def index
     end
@@ -10,7 +11,7 @@ class CommentsController < ApplicationController
     end
 
     def new
-        @comment = Comment.create_comment(@ticket,@comment,current_user,comment_params)
+        @comment_service.create
         redirect_to ticket_path(@ticket.link_id), notice: "Your comment was successful posted."
     end
 
@@ -32,17 +33,22 @@ class CommentsController < ApplicationController
 private
     # Use callbacks to share common setup or constraints between actions.
     def find_comment
-        @comment = @ticket.comments.find(params[:id])
+        @comment = @ticket.comments.find_by(id: params[:id])
     end
 
-    def find_ticket
-        @ticket = Ticket.find_by(link_id: params[:ticket_link_id])
+    def init_service
+        @comment_service = CommentsService.new(@ticket,current_user,comment_params)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def comment_params
       params.require(:comment).permit(:body)
     end
+
+    def find_ticket
+        @ticket = Ticket.find_by(link_id: params[:ticket_link_id])
+    end
+
 
     def ticket_is_closed?
         redirect_to root_path if @ticket.complete

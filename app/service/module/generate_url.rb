@@ -1,6 +1,5 @@
 module GenerateUrl
-    ALPHABET = ('a'..'z').to_a
-    ALPHABET += ('A'..'Z').to_a
+    ALPHABET = ('a'..'z').to_a + ('A'..'Z').to_a
     N = 2
     def self.generate_link_id(ticket)
         ticket.link_id = create_url

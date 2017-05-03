@@ -1,8 +1,19 @@
-class CommentService
-    def create_comment(ticket,comment,user,comment_params)
-        comment = ticket.comments.new comment_params
+class CommentsService
+    include CommentsCase
+
+    def initialize(ticket,user,params)
+        @ticket = ticket
+        @user = user
+        @params = params
+    end
+
+    def create
+        comment = @ticket.comments.new params
         comment.user_id = user.id if user.moderator or user.admin if user
         comment.save
         return comment
     end
+
+private
+    attr_reader :user, :ticket, :params
 end
