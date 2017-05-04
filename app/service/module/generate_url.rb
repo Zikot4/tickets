@@ -11,7 +11,7 @@ module GenerateUrl
         r = Random.new
         url = ""
         N.times do |i|
-            url += 3.times.map {ALPHABET.sample}.join+"-"
+            url += ALPHABET.sample(3).join+"-"
             url += r.rand(100..999).to_s
             url += "-" unless i == N-1
         end
