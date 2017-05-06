@@ -24,7 +24,7 @@ class TicketsService
     def create
         @ticket = Ticket.new(params)
         generate_url
-        #send_url_by_email
+        send_url_by_email
         ticket.save
         return ticket
     end

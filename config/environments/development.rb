@@ -35,8 +35,8 @@ Rails.application.configure do
           :domain                   =>   "mail.google.com",
           :authentication           =>   "login",
           :enable_starttls_auto     =>   true,
-          :user_name                =>   "******",
-          :password                 =>   "******"
+          :user_name                =>   "noreply.ticket44@gmail.com",
+          :password                 =>   "LocalhostNoreply"
   }
   #config.action_mailer.default_url_options[:host] => "localhost:3000"
 
