@@ -38,7 +38,7 @@ Rails.application.configure do
           :user_name                =>   "noreply.ticket44@gmail.com",
           :password                 =>   "LocalhostNoreply"
   }
-  #config.action_mailer.default_url_options[:host] => "localhost:3000"
+  config.action_mailer.default_url_options[:host] => "https://morning-escarpment-33479.herokuapp.com/"
 
 
   config.action_mailer.perform_caching = false
