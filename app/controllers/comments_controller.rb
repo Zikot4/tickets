@@ -2,6 +2,7 @@ class CommentsController < ApplicationController
     before_action :find_ticket
     before_action :find_comment, only: [:destroy, :edit, :show, :update]
     before_action :init_service, only: [:new]
+    before_action :ticket_completed?, only: [:new, :edit, :update, :destroy]
 
     def index
     end
@@ -54,5 +55,8 @@ private
         @ticket = Ticket.find_by(link_id: params[:ticket_link_id])
     end
 
+    def ticket_completed?
+        authorize! :completed?, @ticket
+    end
 
 end

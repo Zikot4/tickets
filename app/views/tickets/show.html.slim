@@ -28,5 +28,5 @@ div class = "panel panel-default"
                 = link_to 'Delete', ticket_path(@ticket.link_id), data: {:confirm => "Are you sure?"}, :method=>:delete, class: "btn btn-warning"
     div class = "panel-footer"
         = render partial: "/comments/comments", locals: {commentable: @ticket}
-        -unless @ticket.complete
+        -if can? :completed?, @ticket
             = render partial: "/comments/form", locals: {commentable: @ticket}

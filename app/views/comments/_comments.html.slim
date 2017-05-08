@@ -10,7 +10,8 @@
 				-if comment.user_id.nil?
 					= image_tag "/system/users/avatars/missing/photo_thumb.jpg",class: "img-circle"
 				-else
-					= image_tag User.find(comment.user_id).avatar.url(:thumb),class: "img-circle"
+					a href = users_url(comment.user_id).to_s
+						= image_tag User.find(comment.user_id).avatar.url(:thumb),class: "img-circle"
 				b
 					-if comment.user_id.nil?
 						= "You"
@@ -18,7 +19,7 @@
 						= User.find(comment.user_id).email
 				br
 				= raw comment.body
-				-unless @ticket.complete
+				- if can? :completed?, @ticket
 					br
 					div class="btn-group" role="group" aria-label="..."
 						-if can? :update, comment

@@ -3,16 +3,19 @@ class Ability
 
     def initialize(user)
         user ||= User.new # guest user (not logged in)
+        can :completed?, Ticket, complete: false
+
         if user.admin
             can :manage, :all
         elsif user.moderator
             can :complete, Ticket do |ticket|
                 ticket.moderator_id == user.id
             end
-            can [:index, :show], :all
-            can :update, Comment, user_id: user.id if can :update, Ticket, complete: false, moderator_id: user.id
+            can [:index,:show], :all
+            can :update, Ticket, complete: false, moderator_id: user.id
+            can :update, Comment, user_id: user.id
             can :destroy, Comment  do |comment|
-                comment.user_id == user.id
+               comment.user_id == user.id
             end
         else
             can :create, :all
