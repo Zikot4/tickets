@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   mount Ckeditor::Engine => '/ckeditor'
+  mount Sidekiq::Web => '/sidekiq'
 
   resources :tickets, param: :link_id do
     put :complete, on: :member
