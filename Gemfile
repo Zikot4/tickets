@@ -69,5 +69,5 @@ gem 'rails_admin', '~> 1.1.1'
 gem 'cancancan'
 
 
-gem 'sprockets'
+gem 'sprockets', '>= 3.7.2'
 gem 'sidekiq'
